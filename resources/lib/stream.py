@@ -34,7 +34,7 @@ def play_od(plugin: Plugin, service_id: str, pid: str) -> xbmcgui.ListItem | Non
     strm_url = select_stream_url(service_id)
     if not strm_url:
         return None
-    li = create_dash_listitem(strm_url)
+    li = create_listitem(strm_url)
 
     resume_info = xbmc.getInfoLabel('ListItem.Property(resume_point)')
     if resume_info and not plugin.is_resuming:
@@ -63,7 +63,7 @@ def play_od(plugin: Plugin, service_id: str, pid: str) -> xbmcgui.ListItem | Non
 
 
 @route.resolve
-def play_live(_, service_id: str, start_t: str = '') -> xbmcgui.ListItem | None:
+def play_live(plugin: Plugin, service_id: str, start_t: str = '') -> xbmcgui.ListItem | None:
     """Play a live stream
 
     Play from the start time if `start_t` is provided.
@@ -71,10 +71,11 @@ def play_live(_, service_id: str, start_t: str = '') -> xbmcgui.ListItem | None:
     """
     log('play_live: service_id = "%s".', service_id)
     jwt = get_jwt('https://www.bbc.co.uk/sounds/play/live/' + service_id)
-    strm_url = select_stream_url(service_id, jwt)
+    strm_type = 'hls' if plugin.kodi_version > (21, 90) else 'dash'
+    strm_url = select_stream_url(service_id, jwt, strm_type)
     if not strm_url:
         return None
-    li = create_dash_listitem(strm_url)
+    li = create_listitem(strm_url, strm_type)
     if start_t:
         resume_time = resume_point(start_t)
         log("Resuming live at %s seconds from the start of the timeshift buffer", resume_time)
@@ -83,7 +84,7 @@ def play_live(_, service_id: str, start_t: str = '') -> xbmcgui.ListItem | None:
     return li
 
 
-def get_jwt(url) -> str | None:
+def get_jwt(url: str) -> str | None:
     """Get the JWT required for live streams."""
     resp = fetch.get(url)
     match = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', resp.text, re.DOTALL)
@@ -95,7 +96,8 @@ def get_jwt(url) -> str | None:
 
 
 def select_stream_url(media_id: str,
-                      jwt: str | None = None) -> str | None:
+                      jwt: str | None = None,
+                      strm_type: str = 'dash') -> str | None:
     url = MEDIA_SELECTOR_URL.format(media_id)
     if jwt:
         headers = {'authorization': 'Bearer ' + jwt}
@@ -121,16 +123,19 @@ def select_stream_url(media_id: str,
         #             break
 
     for connection in selected_media_set['connection']:
-        if connection['protocol'] == 'https' and connection['transferFormat'] == 'dash':
+        if connection['protocol'] == 'https' and connection['transferFormat'] == strm_type:
             return connection['href']
     return None
 
 
-def create_dash_listitem(url) -> xbmcgui.ListItem:
+def create_listitem(url: str, strm_type: str = 'dash') -> xbmcgui.ListItem:
     li = xbmcgui.ListItem(path=url, offscreen=True)
     li.setProperty("IsPlayable", "true")
     li.setProperty('inputstream', 'inputstream.adaptive')
-    li.setMimeType('application/dash+xml')
+    if strm_type == 'hls':
+        li.setMimeType('application/vnd.apple.mpegurl')
+    else:
+        li.setMimeType('application/dash+xml')
     li.setContentLookup(False)
     return li
 

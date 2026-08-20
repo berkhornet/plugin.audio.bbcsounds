@@ -33,6 +33,7 @@ class Plugin:
         self._handle = int(args[1])
         self._querystring = args[2][1:]
         self._addon = xbmcaddon.Addon(self.addon_id)
+        self._kodi_version = None
         self._user_dir = xbmcvfs.translatePath(self._addon.getAddonInfo('profile'))
         os.makedirs(self._user_dir, exist_ok=True)
         self._settings = None
@@ -57,6 +58,13 @@ class Plugin:
     def user_dir(self) -> str:
         """Full path to the folder containing this plugin’s user data."""
         return self._user_dir
+
+    @property
+    def kodi_version(self):
+        if self._kodi_version is None:
+            from resources.lib.kodi_utils import kodi_version
+            self._kodi_version = kodi_version()
+        return self._kodi_version
 
     def run(self):
         """Run the addon.

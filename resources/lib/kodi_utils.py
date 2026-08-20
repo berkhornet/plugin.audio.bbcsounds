@@ -41,6 +41,15 @@ def local_tz():
             local_tz._ltz_ = ltz = ZoneInfo(get_system_setting('locale.timezone'))
         except (TypeError, ValueError):
             # To be Matrix compatible
+            log("No Kodi timezone setting found, falling back to tzlocal")
             tzlocal = importlib.import_module('tzlocal')
             local_tz._ltz_ = ltz = tzlocal.get_localzone()
     return ltz
+
+
+def kodi_version():
+    vers = getattr(kodi_version, '_vers_', None)
+    if vers is None:
+        version_code = xbmc.getInfoLabel('System.BuildVersionCode')
+        kodi_version._vers_ = vers = tuple(int(v) for v in version_code.split('.'))
+    return vers

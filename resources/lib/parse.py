@@ -321,11 +321,13 @@ class Parser:
                                   plot_outline)
 
             # Context menu item 'Listen from the start'.
-            cmd = (f'PlayMedia(plugin://{self._plugin.addon_id}/stream/play_live?'
-                   f'service_id={item["id"]}&start_t={quote(start_utc.isoformat())}, noresume)')
-            li.addContextMenuItems([
-                (self._plugin.translate(TXT_ID_LISTEN_FROM_START), cmd)
-            ])
+            if self._plugin.kodi_version < (21, 90):
+                # Not available on Piers, since live dash streams fail to play.
+                cmd = (f'PlayMedia(plugin://{self._plugin.addon_id}/stream/play_live?'
+                       f'service_id={item["id"]}&start_t={quote(start_utc.isoformat())}, noresume)')
+                li.addContextMenuItems([
+                    (self._plugin.translate(TXT_ID_LISTEN_FROM_START), cmd)
+                ])
         else:
             # Just a failsafe in case the BBC changes the format of the 'secondary' title.
             description = (join_ex('\n\n',

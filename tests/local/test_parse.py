@@ -55,11 +55,12 @@ class ParseRail(TestCase):
         self.assertIsNone(result)
 
 
-class ParsePlayableItem(TestCase):
+class ParsePlayableItem(fixtures.AddonRunner):
     def test_parse_live_playables_from_homepage(self):
         home_data = open_json('homepage.json')
         rails = home_data['props']['pageProps']['dehydratedState']['queries'][1]['state']['data']['data']
-        parser = parse.Parser(MagicMock(), 'my.url')
+
+        parser = parse.Parser(self.create_plugin(), 'my.url')
         for rail in rails:
             if rail['id'] == 'listen_live':
                 live_items = rail['data']
@@ -78,7 +79,7 @@ class ParsePlayableItem(TestCase):
         stations_data = open_json('stations.json')
         # NOTE: This data structure has only one queries member.
         rails = stations_data['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['data']
-        parser = parse.Parser(MagicMock(), 'my.url')
+        parser = parse.Parser(self.create_plugin(), 'my.url')
         for rail in rails:
             parser.container_type = rail['id']
             live_items = rail['data']

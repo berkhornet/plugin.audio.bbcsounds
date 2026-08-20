@@ -5,6 +5,8 @@
 #  See LICENSE.txt or https://www.gnu.org/licenses/gpl-3.0.txt
 # ------------------------------------------------------------------------------
 from __future__ import annotations
+
+import importlib
 import os
 import sys
 import re
@@ -368,6 +370,8 @@ class AddonRunner(TestCase):
     def __init__(self, *args, **kwargs):
         self.subscriptions = kwargs.pop('subscriptions', [])
         self.bookmarks = kwargs.pop('bookmarks', [])
+        self.kodi_version = kwargs.pop('kodi_version', '3.28.0')
+        # TODO: Make default version configurable, e.g. by environment variable.
         super().__init__(*args, **kwargs)
 
     def setUp(self):
@@ -382,11 +386,31 @@ class AddonRunner(TestCase):
         self._subs_patch.stop()
         self._bookm_patch.stop()
 
+    @property
+    def kodi_version(self):
+        return self._kodi_version
+
+    @kodi_version.setter
+    def kodi_version(self, value: str | tuple[int, int, int]):
+        if isinstance(value, str):
+            vers = value.split('.') + [0, 0, 0]
+            self.kodi_version = tuple(int(v) for v in vers[:3])
+        elif isinstance(value, tuple):
+            self._kodi_version = value
+        else:
+            raise TypeError(f"'kodi_version' must be str or tuple, not {type(value).__name__}.")
+
     @staticmethod
     def create_argv(module: str, function: str, **kwargs):
         path = '/'.join(('plugin://plugin.audio.bbcsounds', module, function))
         qs = urlencode(kwargs)
         return [path, '1', '?' + qs if qs else '', 'resume:false']
+
+    def create_plugin(self, module: str = '', function: str = '', **kwargs):
+        argv = self.create_argv(module, function, **kwargs)
+        addon = plugin.Plugin(argv)
+        addon._kodi_version = self.kodi_version
+        return addon
 
     def run_addon(self,
                   argv: list[str],
@@ -396,6 +420,7 @@ class AddonRunner(TestCase):
                   items_max: int | None = None) -> ListItemsCollector:
         with patch('xbmcplugin.addDirectoryItems', ListItemsCollector()) as items_collector:
             addon = plugin.Plugin(argv)
+            addon._kodi_version = self.kodi_version
             addon.run()
             if patched_request:
                 patched_request.assert_called_once()
@@ -408,17 +433,14 @@ class AddonRunner(TestCase):
         return items_collector
 
     def run_callback(self,
-                     callb_func: Callable[..., tuple[str, xbmcgui.ListItem, bool] | None],
-                     callb_kwargs: dict | None = None,
-                     patched_request: MagicMock | None = None,
-                     items_count: int | None = None,
-                     items_min: int | None = None,
-                     items_max: int | None = None) -> ListItemsCollector:
+                     callb_func: Callable[..., tuple[str, xbmcgui.ListItem, bool] | xbmcgui.ListItem | None],
+                     **kwargs,
+                     ):
         callb_module = callb_func.__module__
         assert callb_module.startswith('resources.lib.')
-        callb_module = callb_module[14:]
         callb_name = callb_func.__name__
-        if not callb_kwargs:
-            callb_kwargs = {}
-        argv = self.create_argv(callb_module, callb_name, **callb_kwargs)
-        return self.run_addon(argv, patched_request, items_count, items_min, items_max)
+        addon = self.create_plugin(callb_module, callb_name, **kwargs)
+        mod = importlib.import_module(callb_module)
+        callb_func = getattr(mod, callb_name)
+        return callb_func(addon, **kwargs)
+

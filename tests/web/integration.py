@@ -9,8 +9,9 @@ from tests.support import fixtures
 fixtures.global_setup()
 
 from unittest import TestCase
+from unittest.mock import patch
 
-from resources.lib import plugin
+from resources.lib import plugin, stream
 from resources.lib import menu
 
 
@@ -33,6 +34,10 @@ class TestPages(fixtures.AddonRunner):
     def test_mysounds_page(self):
         argv = self.create_argv('menu', 'list_page', page_url='https://www.bbc.co.uk/sounds/my')
         self.run_addon(argv, items_count=4)
+
+    def test_live_stations_page(self):
+        argv = self.create_argv('menu', 'list_page', page_url='https://www.bbc.co.uk/sounds/stations')
+        self.run_addon(argv, items_count=2)
 
 
 class TestRail(fixtures.AddonRunner):
@@ -71,6 +76,13 @@ class TestRail(fixtures.AddonRunner):
             argv = self.create_argv('menu', 'list_rail', page_url='https://www.bbc.co.uk/sounds', rail_id=rail_id)
             self.run_addon(argv, items_min=6)
 
+    def test_live_stations_rail_content(self, _):
+        # National stations
+        argv = self.create_argv('menu', 'list_rail',
+                                page_url='https://www.bbc.co.uk/sounds/stations',
+                                rail_id='national_and_regional_stations')
+        self.run_addon(argv, items_min=10)
+
 
 class ContainerContent(fixtures.AddonRunner):
     def test_news_summary_page(self, ):
@@ -94,12 +106,23 @@ class Search(fixtures.AddonRunner):
 class TestLogin(TestCase):
     def test_login_with_password(self):
         addon = plugin.Plugin(['plugin://plugin.audio.bbcsounds/resources/lib/account/login_with_passw',
-                             '-1',
-                             '',
-                             'resume:false'])
+                               '-1',
+                               '',
+                               'resume:false'])
         addon.run()
 
 
+class PlayStream(fixtures.AddonRunner):
+    def test_play_live_omega(self):
+        self.kodi_version = '21'
+        item = self.run_callback(stream.play_live, service_id='bbc_radio_one')
+        self.assertIsInstance(item, fixtures.ListItemMock)
+        self.assertTrue('.mpd' in item.getPath())
+        self.assertFalse('m3u8' in item.getPath())
 
-
-
+    def test_play_live_piers_beta(self):
+        self.kodi_version = '22'
+        item = self.run_callback(stream.play_live, service_id='bbc_radio_one')
+        self.assertIsInstance(item, fixtures.ListItemMock)
+        self.assertFalse('.mpd' in item.getPath())
+        self.assertTrue('m3u8' in item.getPath())

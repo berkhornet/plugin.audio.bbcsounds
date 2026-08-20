@@ -120,10 +120,10 @@ class TestRail(fixtures.AddonRunner):
                '&sort=popular&experience=domestic')
         with patch('resources.lib.fetch.get',
                    return_value=HttpResponse(text=open_doc('podcasts_history.json')())) as p_req:
-            self.run_callback(menu.list_rail_by_url,
-                              {'rail_url': url, 'slug': 'Podcasts / History'},
-                              p_req,
-                              items_count=104)  # a Next Page item is added because this listing is larger than normally allowed
+            argv = self.create_argv('menu', 'list_rail_by_url', rail_url=url, slug='Podcasts / History')
+            collector = self.run_addon(argv, p_req, items_count=104)
+            # a Next Page item is added because this listing is larger than normally allowed
+            self.assertEqual(collector.list_item(-1).getLabel(), 'Next Page')
 
 
 @patch('resources.lib.search.SearchHistory.update_last_used')
