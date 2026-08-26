@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.audio.bbcsounds" name="BBC Sounds" version="0.0.1" provider-name="Dimitri Kroon">
+<addon id="plugin.audio.bbcsounds" name="BBC Sounds" version="0.1.0" provider-name="Dimitri Kroon">
     <requires>
         <import addon="xbmc.python" version="3.0.1"/>
         <import addon="inputstream.adaptive" version="21.5.17"/>
@@ -12,21 +12,24 @@
     </extension>
     <extension point="xbmc.addon.metadata">
         <summary lang="en_GB">Music, Radio and Podcasts from the BBC Sounds website</summary>
-        <description lang="en_GB">Play live radio, previous radio programmes and podcasts from the BBC. This Kodi add-on is NOT created by the BBC and in no way affiliated with or endorsed by the BBC</description>
+        <description lang="en_GB">Play live radio, previous radio programmes and podcasts from the BBC with full BBC Account integration. This Kodi add-on is NOT created by the BBC and in no way affiliated with or endorsed by the BBC</description>
         <platform>all</platform>
         <license>GPL-3.0-or-later</license>
-        <forum>
-        </forum>
+        <forum>https://forum.kodi.tv/showthread.php?tid=388288</forum>
         <source>https://github.com/dimkroon/plugin.audio.bbcsounds</source>
         <disclaimer lang="en_GB">
+            This addon is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
         </disclaimer>
         <assets>
             <icon>resources/icon.png</icon>
             <fanart>resources/fanart.jpg</fanart>
         </assets>
         <news>
-            0.0.1 - first published version
+            0.1.0
+            - First beta release
+            - Fixed live radio on Kodi 22-beta1 (Piers) at the expense of 'listen from the start'.
+            - Fixed installation on OSMC
         </news>
-        <reuselanguageinvoker>true</reuselanguageinvoker>
+        <reuselanguageinvoker>false</reuselanguageinvoker>
     </extension>
 </addon>

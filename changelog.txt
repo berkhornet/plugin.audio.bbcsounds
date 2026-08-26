@@ -1,2 +1,6 @@
+v 0.1.0 - 26-08-2026
+- Fixed live radio on Kodi 22-beta1 (Piers) at the expense of 'listen from the start'.
+- Fixed installation on OSMC
+
 v 0.0.1 - 16-08-2026
 - first alpha release
