@@ -2,7 +2,7 @@
 <addon id="plugin.audio.bbcsounds" name="BBC Sounds" version="0.0.1" provider-name="Dimitri Kroon">
     <requires>
         <import addon="xbmc.python" version="3.0.1"/>
-        <import addon="inputstream.adaptive" version="21.5.19"/>
+        <import addon="inputstream.adaptive" version="21.5.17"/>
         <import addon="script.module.requests" version="2.31.0"/>
         <import addon="script.module.backports.zoneinfo" version="0.2.1"/>
         <import addon="script.module.tzlocal" version="5.0.1"/>
