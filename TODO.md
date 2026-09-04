@@ -1,6 +1,6 @@
 # TODO
-- [-] update readme
-- [ ] Fix the error on a cancelled resume dialog.
+- [*] update readme
+- [*] Fix the error on a cancelled resume dialog.
 - [-] Test if stripping `my` from urls affects `limit` and has the 
       same items in the same order.
       - Categories do NOT have the same items, at least not in the same order.

@@ -44,6 +44,6 @@ def remove_listening(plugin, urn, brand_title, episode_title):
             TXT_DLG_HEADER,
             plugin.translate(ID_MSG_REMOVE_LISTING_CONFIRM).format(title=full_title)):
         fetch.post('https://rms.api.bbc.co.uk/v2/my/programmes/plays/remove',
-                   json= {"pid": urn_parts[-1], "resource_type": urn_parts[-2]}
+                   json={"pid": urn_parts[-1], "resource_type": urn_parts[-2]}
                    )
         xbmc.executebuiltin('Container.Refresh')

@@ -8,15 +8,17 @@
 import time
 from datetime import datetime
 
+
 try:
+    # noinspection compatibility
     from zoneinfo import ZoneInfo
 except ImportError:
     # python < 3.9
+    # noinspection unresolved-references
     from backports.zoneinfo import ZoneInfo
 
 
-def strptime(dt_str: str, format: str) -> datetime:
+# noinspection shadowing-builtins
+def strptime(date_string: str, format: str) -> datetime:
     """A bug-free alternative to `datetime.datetime.strptime(...)`"""
-    return datetime(*(time.strptime(dt_str, format)[0:6]))
-
-
+    return datetime(*(time.strptime(date_string, format)[0:6]))

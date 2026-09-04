@@ -139,7 +139,7 @@ class WebPage(TestCase):
         self.check_page('https://www.bbc.co.uk/sounds/podcasts', 'podcasts-page')
 
     def test_mysounds_page(self):
-        self.check_page('https://www.bbc.co.uk/sounds/podcasts', 'mysounds-page')
+        self.check_page('https://www.bbc.co.uk/sounds/my', 'mysounds-page')
 
 
 class LiveStationsPages(TestCase):

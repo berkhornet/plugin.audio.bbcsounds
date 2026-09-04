@@ -111,6 +111,8 @@ class Plugin:
     def translate(self, str_id: int) -> str:
         return self._addon.getLocalizedString(str_id)
 
+    t_ = translate
+
     def set_sort_methods(self, sort_methods: set | None = None):
         handle = self._handle
         xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_UNSORTED)
