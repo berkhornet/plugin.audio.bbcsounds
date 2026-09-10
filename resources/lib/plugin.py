@@ -86,8 +86,9 @@ class Plugin:
             xbmcplugin.addSortMethod(self._handle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
             success = False
             items = callb(self, **params)
+            validate = self._validate_item
             if items:
-                valid_items = [item for item in items if item]
+                valid_items = [validate(item) for item in items if item]
                 xbmcplugin.addDirectoryItems(self._handle, valid_items, totalItems=len(valid_items))
                 success = True
             xbmcplugin.endOfDirectory(self._handle, succeeded=success, cacheToDisc=self.cache_to_disc)
@@ -107,6 +108,14 @@ class Plugin:
             raise RuntimeError(f'Invalid callback type: "{callb_type}".')
 
         self.execute_delayed()
+
+    def _validate_item(self, content_item):
+        li = content_item[1]
+        info = li.getVideoInfoTag()
+        # Ensure a title is set to support wall views.
+        if not info.getTitle():
+            info.setTitle(li.getLabel())
+        return content_item
 
     def translate(self, str_id: int) -> str:
         return self._addon.getLocalizedString(str_id)
