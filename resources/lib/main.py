@@ -8,6 +8,7 @@
 import sys
 from time import monotonic
 
+import xbmc
 import xbmcaddon
 import xbmcplugin
 import xbmcgui
@@ -36,6 +37,7 @@ def run():
                                       str(err),
                                       xbmcgui.NOTIFICATION_INFO,
                                       7000)
+        xbmc.PlayList(xbmc.PLAYLIST_MUSIC).clear()
         xbmcplugin.endOfDirectory(int(sys.argv[1]), succeeded=False)
     except Exception as err:
         # A final catch-all to ensure that any unhandled exceptions are logged and we exit gracefully.
@@ -44,4 +46,5 @@ def run():
                                       str(err),
                                       xbmcgui.NOTIFICATION_ERROR,
                                       7000)
+        xbmc.PlayList(xbmc.PLAYLIST_MUSIC).clear()
         sys.exit(1)

@@ -81,6 +81,7 @@ def play_live(plugin: Plugin, service_id: str, start_t: str = '') -> xbmcgui.Lis
         log("Resuming live at %s seconds from the start of the timeshift buffer", resume_time)
         li.getVideoInfoTag().setResumePoint(resume_time, 14400)
         li.setProperty('inputstream.adaptive.play_timeshift_buffer', 'true')
+    xbmc.PlayList(xbmc.PLAYLIST_MUSIC).clear()
     return li
 
 

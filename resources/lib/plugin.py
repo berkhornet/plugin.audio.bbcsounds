@@ -9,6 +9,7 @@ from __future__ import annotations
 import os
 from urllib.parse import parse_qsl
 
+import xbmc
 import xbmcgui
 import xbmcplugin
 import xbmcaddon
@@ -98,6 +99,9 @@ class Plugin:
             if li:
                 xbmcplugin.setResolvedUrl(self._handle, True, li)
             else:
+                # Prevent the next item from playing when setting "Play next song automatically" is enabled
+                # in Kodi's player settings.
+                xbmc.PlayList(xbmc.PLAYLIST_MUSIC).clear()
                 xbmcplugin.setResolvedUrl(self._handle, False, xbmcgui.ListItem())
 
         elif callb_type == route.SCRIPT:
