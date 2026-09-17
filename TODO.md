@@ -4,7 +4,7 @@
 - [-] Test if stripping `my` from urls affects `limit` and has the 
       same items in the same order.
       - Categories do NOT have the same items, at least not in the same order.
-- [ ] add title to main menu items to support wall views
+- [*] add title to main menu items to support wall views
 - [ ] check if it makes sense to add fanart
 
 
@@ -18,3 +18,5 @@
 - [ ] Implement downloads
 - [ ] Subdivide brand listings in series
 - [ ] Detect when system settings have changed and reload the app.
+- [ ] Review how to deal with Kodi's player setting 'play next song 
+  automatically'.
