@@ -83,7 +83,8 @@ class HttpResponse(Response):
                  headers: dict | None = None,
                  content: bytes | None = None,
                  text: str | None = None,
-                 reason=None):
+                 reason: str = None,
+                 url: str  = None):
         super().__init__()
         if status_code is not None:
             self.status_code = status_code
@@ -102,6 +103,8 @@ class HttpResponse(Response):
             if status_code is None:
                 self.status_code = 200
                 self.reason = 'OK'
+        if url is not None:
+            self.url = url
 
 
 class MockedDt(datetime):

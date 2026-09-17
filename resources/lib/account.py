@@ -248,11 +248,11 @@ class LoginSession:
             log("Account sign-in aborted; this device is already signed in to a BBC account.")
             localise = xbmcaddon.Addon().getLocalizedString
             raise SignInError(localise(TXT_ALREADY_SIGNED_IN))
-        match = re.search('action="([^"]+)"', resp.text)
+        match = re.search(r'href="/signin/forgotten/credentials\?([^"]+)"', resp.text)
         # noinspection unresolved-references
-        querystring = unescape(match[1].split('?', 1)[-1])
+        querystring = unescape(match[1])
         self._query_params = dict(parse_qsl(querystring))
-        del self._query_params['jsEnabled']
+        self._query_params.pop('jsEnabled', None)
         self._state = LoginStatus.INITIALISED
         return True
 

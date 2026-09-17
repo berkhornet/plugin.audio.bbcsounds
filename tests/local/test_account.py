@@ -32,6 +32,15 @@ class TestLoginStatus(TestCase):
 
 @patch('resources.lib.fetch.cookie_jar', new=MockedCookieJar)
 class TestLoginSession(TestCase):
+    @patch('requests.sessions.Session.get',
+           return_value=HttpResponse(text=open_doc('signin/bbc-sign-in-page.html')(), url='https://account.bbc.co.uk/auth'))
+    def test_session_initialisation(self, p_get):
+        with account.LoginSession() as login:
+            result = login.initialise()
+            self.assertTrue(result)
+            self.assertEqual(account.LoginStatus.INITIALISED, login.status)
+            p_get.assert_called_once()
+
     @patch('requests.sessions.Session.post',
            return_value=HttpResponse(text=open_doc('signin/response_email_check_with_valid_email.html')()))
     def test_check_email(self, p_post):
