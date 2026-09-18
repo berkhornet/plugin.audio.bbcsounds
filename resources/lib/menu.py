@@ -7,8 +7,11 @@
 
 from __future__ import annotations
 import json
+import sys
 
 from xbmcgui import ListItem
+import xbmcaddon
+import xbmcplugin
 
 from resources.lib import route
 from resources.lib import parse
@@ -20,10 +23,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from resources.lib.plugin import Plugin
     from resources.lib.typedef import ListItemGenerator
-
-import xbmcaddon
-import xbmcplugin
-import sys
 
 addon = xbmcaddon.Addon(id='plugin.audio.bbcsounds')
 addon_path = addon.getAddonInfo('path')
