@@ -33,7 +33,7 @@ def get_page_data(url: str,
 
 
 @route.content
-def main_menu(_) -> ListItemGenerator:
+def main_menu(plugin: Plugin) -> ListItemGenerator:
     xbmcplugin.setContent(int(sys.argv[1]), 'files')
     addon = plugin.addon
     addon_path = addon.getAddonInfo('path')   
