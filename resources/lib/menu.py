@@ -24,10 +24,6 @@ if TYPE_CHECKING:
     from resources.lib.plugin import Plugin
     from resources.lib.typedef import ListItemGenerator
 
-addon = xbmcaddon.Addon(id='plugin.audio.bbcsounds')
-addon_path = addon.getAddonInfo('path')
-main_menu_icon_path = addon_path + '/resources/media/mainmenuicons/'
-
 def get_page_data(url: str,
                   params: dict | None = None):
     """Return the JSON data embedded in the HTML of a page."""
@@ -39,6 +35,9 @@ def get_page_data(url: str,
 @route.content
 def main_menu(_) -> ListItemGenerator:
     xbmcplugin.setContent(int(sys.argv[1]), 'files')
+    addon = plugin.addon
+    addon_path = addon.getAddonInfo('path')   
+    main_menu_icon_path = addon_path + '/resources/media/mainmenuicons/'
     list_item = ListItem(label='Home')
     list_item.setArt({"thumb": main_menu_icon_path + 'home.png'})
     yield (route.build_callback('menu/list_page', page_url='https://www.bbc.co.uk/sounds', slug='Home'),
